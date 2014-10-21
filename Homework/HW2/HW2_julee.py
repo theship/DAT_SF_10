@@ -59,7 +59,7 @@ def cross_validate(X, y, classifier, k_fold) :
 
     # derive a set of (random) training and testing indices
     k_fold_indices = KFold( len(X), n_folds=k_fold,
-                           indices=True, shuffle=True,
+                           indices=False, shuffle=True,
                            random_state=0)
 
     k_score_total = 0
@@ -82,8 +82,17 @@ print cross_validate(X, y, KNeighborsClassifier(3).fit, 5)
 ## QUESTION 3: User your knn classifier and xvalidation code from Q1&2, above
 ## to get optimal K (# of nearest neighbors to consult)
 
-xval = cross_validate(X, y, KNeighborsClassifier(3).fit, 5)
-plt.plot(myknn.score(X_test, y_test), xval)
+
+
+knn_values = np.array(range(1,120))
+knn_results = []
+for points in range(1,120):
+    knn_results.append(cross_validate(X, y, KNeighborsClassifier(points).fit, 5))
+
+
+
+## xval = cross_validate(X, y, KNeighborsClassifier(3).fit, 5)
+plt.plot(knn_results)
 plt.show()
 
 
