@@ -31,13 +31,14 @@ iris = pd.read_csv('iris.csv', names = ['sepal_length', 'sepal_width', 'petal_le
 type(iris)
 iris.keys()
 print iris.info()
+'''
 print iris.describe()
+'''
 print iris.keys()
 '''
 
 iris = iris.dropna()
 X = iris.as_matrix(feature_names).astype(float)
-## Names = iris['names']
 y = iris.as_matrix(['target_names']).astype(str)
 y = np.ravel(y)
 
@@ -45,26 +46,27 @@ y = np.ravel(y)
 from sklearn.cross_validation import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.20, random_state=0)
+
 # Train KNN classifier defined function on the train data
 from sklearn.neighbors import KNeighborsClassifier
 myknn = KNeighborsClassifier(3).fit(X_train,y_train)
-myknn.score(X_test, y_test)
+knnScore = myknn.score(X_test, y_test)
 
-print myknn.score(X_test, y_test)
+print knnScore
 
 ## QUESTION 2: Implement cross-validation for your KNN classifier.
 
 # generic cross validation function
-def cross_validate(X, y, classifier, k_fold) :
+def cross_validate(X, y, classifier, k_fold):
 
     # derive a set of (random) training and testing indices
     k_fold_indices = KFold( len(X), n_folds=k_fold,
-                           indices=False, shuffle=True,
+                           indices=True, shuffle=True,
                            random_state=0)
 
     k_score_total = 0
     # for each training and testing slices run the classifier, and score the results
-    for train_slice, test_slice in k_fold_indices :
+    for train_slice, test_slice in k_fold_indices:
 
         model = classifier(X[ train_slice  ],
                          y[ train_slice  ])
@@ -75,35 +77,31 @@ def cross_validate(X, y, classifier, k_fold) :
         k_score_total += k_score
 
     # return the average accuracy
-    return k_score_total/k_fold
+    averAccuracy =  k_score_total/k_fold
+
+    return averAccuracy
 
 print cross_validate(X, y, KNeighborsClassifier(3).fit, 5)
 
-## QUESTION 3: User your knn classifier and xvalidation code from Q1&2, above
+## QUESTION 3: Use your knn classifier (knnScore) and xvalidation code from Q1&2 (averAccuracy), above
 ## to get optimal K (# of nearest neighbors to consult)
-
-
 
 knn_values = np.array(range(1,120))
 knn_results = []
 for points in range(1,120):
     knn_results.append(cross_validate(X, y, KNeighborsClassifier(points).fit, 5))
 
+maxK = max(knn_results)
+minK = min(knn_results)
+meanK = np.array(knn_results).mean()
+optimalK_max = knn_results.index(maxK)
 
+print "The top k most similar pieces of data from our known dataset is:"
+print optimalK_max
+print "But, I am not sure what I'm doing here..."
 
-## xval = cross_validate(X, y, KNeighborsClassifier(3).fit, 5)
+## QUESTION 4: Use matplotlib to plot classifier accuracy vs. hyperparameter K
+## for a range of K that you consider interesting - & explain
+
 plt.plot(knn_results)
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
